@@ -45,7 +45,7 @@ the DFP contains all those support files for GCC, ARM clang, and lots of
 other compilers apart from XC32.
 
 It is **not** an undocumented feature -- Microchip explicitly advertises
-them on their developer website: 
+them on their developer website: https://developerhelp.microchip.com/xwiki/bin/view/software-tools/x/projects/packs/dfps-introduction/ 
 
 The only thing reused from MCC is the peripheral initialization code
 (`SYS_Initialize()`). This is only some generic clock configuration and
