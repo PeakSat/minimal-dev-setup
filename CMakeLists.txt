@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.19.2)
 
 project(OBC_SOFTWARE C CXX ASM)
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+#include(FindHarmony)
+
+#set(MHC_DIR "" CACHE PATH "Path to Microchip Harmony Configurator directory")
+
+#find_package(Harmony REQUIRED)
+#configure_harmony_components(DFP XXX CSP ZZZ )
+#add_harmony_config(TestConfig ~/HarmonyProjects/MyProject_1/firmware/src/config/default/default.mhc)
+
 add_library(CMSIS_Core INTERFACE) # this is only headers
 target_include_directories(CMSIS_Core INTERFACE lib/CMSIS/CMSIS/Core/Include/)
 
@@ -16,11 +25,25 @@ target_link_libraries(SAMV71Q21B_DFP PRIVATE CMSIS_Core)
 file(REAL_PATH lib/SAMV71_DFP/samv71b/gcc/gcc/samv71q21b_flash.ld LINKER_SCRIPT_ABSPATH)
 set_target_properties(SAMV71Q21B_DFP PROPERTIES LINKER_SCRIPT_PATH ${LINKER_SCRIPT_ABSPATH})
 
+add_library(SystemConfig OBJECT)
+target_include_directories(SystemConfig PUBLIC lib/mplab_dummy_deps/config/default/) 
+target_sources(SystemConfig
+  PRIVATE
+  lib/mplab_dummy_deps/config/default/initialization.c # Peripheral initialization
+  lib/mplab_dummy_deps/config/default/exceptions.c # Infinite-loop fault handlers (more debug-friendly)
+  lib/mplab_dummy_deps/config/default/peripheral/clk/plib_clk.c # Peripheral drivers...
+  lib/mplab_dummy_deps/config/default/peripheral/efc/plib_efc.c
+  lib/mplab_dummy_deps/config/default/peripheral/nvic/plib_nvic.c
+  lib/mplab_dummy_deps/config/default/peripheral/pio/plib_pio.c
+  lib/mplab_dummy_deps/config/default/peripheral/systick/plib_systick.c
+)
+target_link_libraries(SystemConfig PRIVATE SAMV71Q21B_DFP CMSIS_Core)
+
 add_executable(${PROJECT_NAME}.elf)
 get_target_property(LINKER_SCRIPT SAMV71Q21B_DFP LINKER_SCRIPT_PATH)
 target_include_directories(${PROJECT_NAME}.elf PRIVATE include/)
 target_sources(${PROJECT_NAME}.elf PRIVATE src/main.c)
-target_link_libraries(${PROJECT_NAME}.elf PRIVATE SAMV71Q21B_DFP CMSIS_Core)
+target_link_libraries(${PROJECT_NAME}.elf PRIVATE SAMV71Q21B_DFP CMSIS_Core SystemConfig)
 target_link_options(${PROJECT_NAME}.elf
         PRIVATE
         "LINKER:--gc-sections" # without this linking fails with 'undefined reference to __bss_start/__bss_end'. MPLAB also passes this
