@@ -1,0 +1,34 @@
+[settings]
+os=baremetal
+arch=armv7
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.cstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=13.2
+build_type=Release
+
+[conf]
+tools.cmake.cmaketoolchain:system_name=Generic
+tools.cmake.cmaketoolchain:system_processor=ARM
+
+# CMake assumes default linkage for its test. Default linker settings is never the case
+# in anything embedded, thus the test fails and must be disabled
+# (ref https://stackoverflow.com/a/53635241)
+tools.cmake.cmaketoolchain:extra_variables={"CMAKE_TRY_COMPILE_TARGET_TYPE": "STATIC_LIBRARY"}
+#, "CMAKE_VERBOSE_MAKEFILE": "ON"}
+
+# Setting buildenv for compiler executables is not compatible with CMakeToolchain 
+# (ref https://stackoverflow.com/q/77373064).
+# Assumes that the toolchain 'bin/' subdir is in the PATH
+tools.build:compiler_executables={"c": "arm-none-eabi-gcc", "cpp": "arm-none-eabi-g++", "asm": "arm-none-eabi-as", "ld": "arm-none-eabi-ld", "ar": "arm-none-eabi-ar"}
+
+# Additional flags for hard float support
+# tools.build:cflags=["-mfloat-abi=hard", "-mfpu=fpv5-d16"] 
+# tools.build:defines=["ARM_MATH_CM7", "ARM_MATH_MATRIX_CHECK", "ARM_MATH_ROUNDING", "__FPU_PRESENT=1"]
+
+tools.build:defines=["__ATSAMV71Q21B__"]
+tools.build:cflags=["-mcpu=cortex-m7", "-mthumb", "-ffunction-sections", "-mlong-calls"]
+tools.build:cxxflags=["-mcpu=cortex-m7", "-mthumb", "-ffunction-sections", "-mlong-calls", "-fno-exceptions"]
+# tools.build:exelinkflags=["--specs=nosys.specs", "--gc-sections", "--print-memory-usage"]
+# tools.build:linker_scripts=["./samv71q21b_flash.ld"]
