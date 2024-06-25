@@ -1,0 +1,32 @@
+[settings]
+os=baremetal
+arch=armv7
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.cstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=13.2
+build_type=Release
+
+[conf]
+# Generic-ELF is merely a way to add .elf suffix to generated
+# binaries. Setting CMAKE_EXECUTABLE_SUFFIX directly from within a
+# toolchain file is considered a hack, ref:
+# https://gitlab.kitware.com/cmake/cmake/-/merge_requests/6630.
+# Otherwise it is the same as Generic, aka bare-metal system.
+tools.cmake.cmaketoolchain:system_name=Generic-ELF
+tools.cmake.cmaketoolchain:system_processor=ARM
+
+# Assume that compiler binaries are located in PATH.
+# Using compiler_executables is said to be safer than bare env
+# vars. (https://stackoverflow.com/q/77373064)
+tools.build:compiler_executables={"c": "arm-none-eabi-gcc", "cpp": "arm-none-eabi-g++", "asm": "arm-none-eabi-as"}
+
+# HACK: Conan profiles don't support binutils settings,
+# therefore we set them manually via CMake.
+# Using extra_variables can override any settings done by
+# CMakeToolchain, so it must be used with care. 
+# tools.cmake.cmaketoolchain:extra_variables={"CMAKE_AR": "arm-none-eabi-ar", "CMAKE_LINKER": "arm-none-eabi-ld", "CMAKE_OBJCOPY": "arm-none-eabi-objcopy", "CMAKE_RANLIB": "arm-none-eabi-ranlib", "CMAKE_SIZE_UTIL": "arm-none-eabi-size"}
+
+# SAMV71-specific settings are done from within the included toolchain file
+tools.cmake.cmaketoolchain:user_toolchain={{ [os.path.join(profile_dir, "cmake-settings/samv71q21b.cmake")] }}
