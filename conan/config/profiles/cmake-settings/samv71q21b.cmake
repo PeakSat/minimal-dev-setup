@@ -15,7 +15,7 @@ add_compile_definitions("__ATSAMV71Q21B__")
 # IMHO these are the absolute bare minimum and should be always on
 # by default in every new project. You can always disable specific warnings
 # through CMakeLists compiler options.
-set(BASIC_WARNING_FLAGS "-Wall -Wextra -pedantic")
+set(BASIC_WARNING_FLAGS "-Wall -Wextra")
 
 # Flags for CMake's 'Debug' preset.
 # Explanation:
