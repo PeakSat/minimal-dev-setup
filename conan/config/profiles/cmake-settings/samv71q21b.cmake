@@ -97,12 +97,14 @@ set(BASIC_LINKER_FLAGS "-Wl,--print-memory-usage -Wl,-Map=${PROJECT_BINARY_DIR}/
 #   Given all the above, in order for any C or C++ programs to be loadable at all
 #   we need to provide a very minimal environment that satisfies the above
 #   constraints. This environment is made from the following essential components:
-#   - startup file: This is a specially written, device-specific C file that:
+#   - device startup file: This is a specially written, device-specific C file that:
 #     i) describes the layout of the IVT (handlers sorted by exception number) for
 #     the device in a special (.vectors) section of the executable, as well as the
 #     signatures of all possible interrupt handlers
 #     ii) provides default implementations of the interrupt handlers and, most
-#     importantly, of the reset handler called on power-on.
+#     importantly, of the reset handler called on power-on. The reset handler
+#     does chores like relocating the executable and IVT into RAM, clearing the
+#     zero segment and initializing libc, before finally jumping into main().
 #     iii) declares external "marker" symbols used by the IVT description, such as
 #     the main() function or '_sstack'/'_estack' (start/end of stack), in order for
 #     the linker to place each section at the correct addresses.
@@ -135,42 +137,6 @@ set(BASIC_LINKER_FLAGS "-Wl,--print-memory-usage -Wl,-Map=${PROJECT_BINARY_DIR}/
 # Refs:
 set(BOOT_LINKER_FLAGS "-Wl,-T${CMAKE_CURRENT_SOURCE_DIR}/samv71q21b_flash.ld")
 
-# -= POSIX environment/libc settings =-
-# 
-# Background:
-#   The ARM GCC toolchain (arm-none-eabi-gcc) comes with a port of the
-#   'newlib-nano' libc implementation. This libc gets linked implicitly (unless
-#   stopped by passing -nostdlib) and provides a default implementation of the
-#   C runtime (crt0.S). We do want newlib because it provides nice things like
-#   C++ support (without exceptions) that is hard to do on our own, and we're
-#   not that starved for flash space.
-#   
-#   Although the default Reset_Handler implementation provided in the startup
-#   file does all the chores like relocating the executable and IVT into RAM,
-#   clearing the zero segment and initializing libc, some configuration is still
-#   required before we're able to use it for our cases.
-#   Namely, since C originated from POSIX, the user must provide definitions for
-#   the following POSIX syscalls:
-#   - _exit
-#   - _write
-#   - _close
-#   - _read
-#   - _lseek
-#   - _sbrk
-#
-# Explanation:
-#  - --defsym=__bss_start__/__bss_end__: The compiled version of newlib-nano included
-#    with GCC (13.2 as of 2024-Jun-25) requires definitions for the symbols denoting
-#    the start and end of .bss section, named __bss_start__ and __bss_end__ respectively.
-#    However, the corresponding symbols in the startup file and linker script are _sbss and
-#    _ebss, which causes a linker error. Although applying --gc-sections would technically
-#    fix the issue (especially if libc is not used at all), the definition is kept for
-#    explicitness.
-#  - --specs=nosys.specs (TODO)
-# Refs (TODO):
-# - https://web.archive.org/web/20230103002604/https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/LegacyCollaterals/Frequently-Asked-Questions-4.9.3.26.txt
-set(LIBC_LINKER_FLAGS "-Wl,--defsym=__bss_start__=_sbss -Wl,--defsym=__bss_end__=_ebss")
-
 # -= Advanced optimization settings =-
 #
 # Section optimization flags.
@@ -180,9 +146,17 @@ set(LIBC_LINKER_FLAGS "-Wl,--defsym=__bss_start__=_sbss -Wl,--defsym=__bss_end__
 #    simple link-time optimization by deleting any unused sections/symbols with
 #    the -Wl,--gc-sections` flag, resulting in smaller binaries.
 #
-#    NOTE: Disabling this might introduce linker errors, due to the crt0.S
-#    file (C runtime) having references to missing syscall implementations that
-#    get removed by --gc-sections at link time.
+#    WARNING: This is not only a size optimization! The ARM GCC toolchain
+#    (arm-none-eabi-gcc) comes with a compiled port of the newlib-nano libc, that
+#    gets implicitly linked. We *do* want newlib because it provides nice things
+#    such as C++ support that is hard to do on our own, and we're not that starved
+#    for flash space.
+#
+#    What does newlib have to do with --gc-sections? Well, this compiled port
+#    contains lots of symbols (e.g. __bss_start__/__bss_end__, references to
+#    various syscalls etc.) that are implicitly assumed to be removed by this
+#    flag. Thus, removing this flag causes 'undefined reference to _write/_close/
+#    _exit/_read/_sbrk/whatever) to appear. 
 set(SECTION_OPT_FLAGS "-ffunction-sections -fdata-sections")
 set(SECTION_LINK_FLAGS "-Wl,--gc-sections")
 
@@ -208,4 +182,4 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT}" CACH
 string(CONCAT CMAKE_C_FLAGS "${DEVICE_FLAGS} ${SECTION_OPT_FLAGS}")
 string(CONCAT CMAKE_CXX_FLAGS "${DEVICE_FLAGS} ${SECTION_OPT_FLAGS}")
 
-string(CONCAT CMAKE_EXE_LINKER_FLAGS "${BASIC_LINKER_FLAGS} ${BOOT_LINKER_FLAGS} ${LIBC_LINKER_FLAGS} ${SECTION_LINK_FLAGS}")
+string(CONCAT CMAKE_EXE_LINKER_FLAGS "${BASIC_LINKER_FLAGS} ${BOOT_LINKER_FLAGS} ${SECTION_LINK_FLAGS}")
