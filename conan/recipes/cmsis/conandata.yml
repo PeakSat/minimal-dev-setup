@@ -1,0 +1,7 @@
+sources:
+  "5.4.0":
+    # .atpack files are merely zip files following the Open CMSIS Pack Spec:
+    # https://github.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec
+    url: "https://packs.download.microchip.com/ARM.CMSIS.5.4.0.atpack"
+    sha256: "71e6cc0df5566b44aac91cd2035b33a55179624f8b63ab378e8d95fc05d08468"
+
