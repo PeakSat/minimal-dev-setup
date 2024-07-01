@@ -180,19 +180,14 @@ set(LIBC_LINKER_FLAGS "-Wl,--defsym=__bss_start__=_sbss -Wl,--defsym=__bss_end__
 #    simple link-time optimization by deleting any unused sections/symbols with
 #    the -Wl,--gc-sections` flag, resulting in smaller binaries.
 #
-#    WARNING: This is not only a size optimization! The ARM GCC toolchain
-#    (arm-none-eabi-gcc) comes with a compiled port of the newlib-nano libc, that
-#    gets implicitly linked. We *do* want newlib because it provides nice things
-#    such as C++ support that is hard to do on our own, and we're not that starved
-#    for flash space.
-#
-#    What does newlib have to do with --gc-sections? Well, this compiled port
-#    contains lots of symbols (e.g. __bss_start__/__bss_end__, references to
-#    various syscalls etc.) that are implicitly assumed to be removed by this
-#    flag. Thus, removing this flag causes 'undefined reference to _write/_close/
-#    _exit/_read/_sbrk/whatever) to appear. 
-set(SECTION_OPT_FLAGS "-ffunction-sections -fdata-sections")
-set(SECTION_LINK_FLAGS "-Wl,--gc-sections")
+#    NOTE: Enabling this optimization can hide undefined symbols, causing the
+#    build to seem to work until some symbol gets misdefined and the build
+#    suddenly breaks with a linker error! Although most likely these symbols
+#    are indeed unused most of the time, I think it is good practice to not
+#    rely on this behavior by accident for the builds to work correctly, so
+#    it is by default disabled.
+#set(SECTION_OPT_FLAGS "-ffunction-sections -fdata-sections")
+#set(SECTION_LINKER_FLAGS "-Wl,--gc-sections")
 
 # Default C compiler flags
 set(CMAKE_C_FLAGS_DEBUG_INIT "${BASIC_WARNING_FLAGS} ${DEBUG_FLAGS}")
