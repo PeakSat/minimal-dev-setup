@@ -15,6 +15,8 @@ class SAMV71BlinkyRecipe(ConanFile):
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
 
+    requires = "cmsis/5.4.0"
+
     # Sources are located in the same place as this recipe, copy them to the recipe
     exports_sources = "CMakeLists.txt", "src/*"
 
