@@ -137,6 +137,40 @@ set(BASIC_LINKER_FLAGS "-Wl,--print-memory-usage -Wl,-Map=${PROJECT_BINARY_DIR}/
 # Refs:
 set(BOOT_LINKER_FLAGS "-Wl,-T${CMAKE_CURRENT_SOURCE_DIR}/samv71q21b_flash.ld")
 
+# -= POSIX environment/libc settings =-
+#
+# Background:
+#   The ARM GCC toolchain (arm-none-eabi-gcc) comes with a compiled port of the
+#   newlib-nano libc to provide a minimal runtime environment. By default, GCC
+#   will implicitly link it in the binary unless stopped with -nostdlib. In our
+#   case we *do* want newlib because it provides nice things such as C++ support
+#   that is very hard to do correctly on our own, and we're not that starved for
+#   flash space.
+#
+# Explanation:
+#  - --specs=nosys.specs: All implementations of C must supply a number of POSIX
+#    syscall definitions (e.g. _exit, _open, _sbrk). These normally require an
+#    operating system to be in place. Since we are on an embedded platform, we
+#    don't really have a filesystem or the concept of processes or stuff
+#    like this. Thus, nosys.specs is a 'spec file' included with GCC, which
+#    reconfigures those implicit settings to link in 'libnosys', a set of stubs
+#    for these syscalls that always return an error whenever called.
+#  - --defsym=__bss_start__/__bss_end__: The newlib-nano port included with GCC
+#    (13.2 as of 2024-Jun-25) requires definitions for the symbols denoting the
+#    start and end of .bss section, named __bss_start__ and __bss_end__
+#    respectively. The corresponding symbols in the startup file and linker script
+#    are _sbss and _ebss, and the mismatch causes a linker error, which is fixed
+#    by defining the symbols to whatever the linker script is already using.
+#  - --defsym=end: The default implementation of _sbrk that comes with libnosys
+#    requires a linker-defined symbol named 'end'. By convention heap grows upwards
+#    thus its end is initially located at the *first* address of the heap space,
+#    which corresponds to the _sheap symbol in the linker script.
+# Refs:
+#  - https://web.archive.org/web/20230103002604/https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/LegacyCollaterals/Frequently-Asked-Questions-4.9.3.26.txt
+#  - https://forum.microchip.com/s/topic/a5C3l000000Uib8EAC/t184545
+set(LIBC_COMPILE_FLAGS "--specs=nosys.specs")
+set(LIBC_LINKER_FLAGS "-Wl,--defsym=__bss_start__=_sbss -Wl,--defsym=__bss_end__=_ebss -Wl,--defsym=end=_sheap")
+
 # -= Advanced optimization settings =-
 #
 # Section optimization flags.
@@ -179,7 +213,7 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL_INIT}" CACHE STRING
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "${CMAKE_C_FLAGS_RELWITHDEBINFO_INIT}")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT}" CACHE STRING "" FORCE)
 
-string(CONCAT CMAKE_C_FLAGS "${DEVICE_FLAGS} ${SECTION_OPT_FLAGS}")
-string(CONCAT CMAKE_CXX_FLAGS "${DEVICE_FLAGS} ${SECTION_OPT_FLAGS}")
+string(CONCAT CMAKE_C_FLAGS "${DEVICE_FLAGS} ${SECTION_OPT_FLAGS} ${LIBC_COMPILE_FLAGS}")
+string(CONCAT CMAKE_CXX_FLAGS "${DEVICE_FLAGS} ${SECTION_OPT_FLAGS} ${LIBC_COMPILE_FLAGS}")
 
-string(CONCAT CMAKE_EXE_LINKER_FLAGS "${BASIC_LINKER_FLAGS} ${BOOT_LINKER_FLAGS} ${SECTION_LINK_FLAGS}")
+string(CONCAT CMAKE_EXE_LINKER_FLAGS "${BASIC_LINKER_FLAGS} ${BOOT_LINKER_FLAGS} ${LIBC_LINKER_FLAGS} ${SECTION_LINK_FLAGS}")
