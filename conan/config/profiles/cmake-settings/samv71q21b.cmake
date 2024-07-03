@@ -130,12 +130,13 @@ set(BASIC_LINKER_FLAGS "-Wl,--print-memory-usage -Wl,-Map=${PROJECT_BINARY_DIR}/
 #     assumed to be located in the project root. You may need to change it if
 #     using features such as memory protection (MPU) or TCM, so make sure you
 #     know the language, it's not that complicated if you spend some time to
-#     learn about ELF files and get used to the symbols/terminology.
+#     learn about ELF files and get used to the symbols/terminology (ref
+#     linker script tutorial)
 #
 # Explanation:
 #    -T: Specifies location of linker script.
 # Refs:
-set(BOOT_LINKER_FLAGS "-Wl,-T${CMAKE_CURRENT_SOURCE_DIR}/samv71q21b_flash.ld")
+#set(BOOT_LINKER_FLAGS "-Wl,-T${CMAKE_CURRENT_SOURCE_DIR}/samv71q21b_flash.ld")
 
 # -= POSIX environment/libc settings =-
 #
