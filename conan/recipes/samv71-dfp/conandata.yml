@@ -1,0 +1,7 @@
+sources:
+  "4.9.117":
+    # .atpack files are merely zip files following the Open CMSIS Pack Spec:
+    # https://github.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec
+    url: "https://packs.download.microchip.com/Microchip.SAMV71_DFP.4.9.117.atpack"
+    sha256: "e6095cd5e16990bf71aeb6566dfbc3062e21e1e9282c4e54fdf9ea5001318ac5"
+
