@@ -1,0 +1,6 @@
+sources:
+  "3.8.5":
+    url: "https://github.com/Microchip-MPLAB-Harmony/mhc/archive/refs/tags/v3.8.5.zip"
+    sha256: "58de847e19162ebb08c7bb96da380e205b03914e53c1972ae8ac6fcc232cc3d1"
+    strip_root: true
+
