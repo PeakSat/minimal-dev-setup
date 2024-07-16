@@ -90,6 +90,7 @@ class samv71_dfpRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.set_property("cmake_file_name", "SAMV71-DFP")
+        self.cpp_info.srcdirs = ["src"]
 
         self.cpp_info.components["Core"].includedirs = ['include']
         self.cpp_info.components["Core"].requires = ['cmsis::Core']
