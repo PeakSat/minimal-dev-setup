@@ -1,0 +1,6 @@
+sources:
+  "3.19.0":
+    url: "https://github.com/Microchip-MPLAB-Harmony/csp/archive/refs/tags/v3.19.0.zip"
+    sha256: "cdc9de89966fc6b4a0c9d2bc6973252ae27c60f79a6fe383f6f11dfb025d2a9b"
+    strip_root: true
+

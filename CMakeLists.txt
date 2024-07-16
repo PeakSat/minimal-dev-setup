@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.19.2)
 
 project(OBC_SOFTWARE C CXX ASM)
 
+find_package(Harmony REQUIRED)
 find_package(SAMV71-DFP COMPONENTS SAMV71Q21B REQUIRED)
 
 add_executable(${PROJECT_NAME})

@@ -15,7 +15,7 @@ class SAMV71BlinkyRecipe(ConanFile):
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
 
-    requires = "samv71-dfp/4.9.117"
+    requires = "samv71-dfp/4.9.117", "harmony/3.0"
 
     # Sources are located in the same place as this recipe, copy them to the recipe
     exports_sources = "CMakeLists.txt", "src/*"
