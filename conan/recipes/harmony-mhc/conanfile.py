@@ -14,8 +14,7 @@ class harmony_mhcRecipe(ConanFile):
     topics = ("chip-support", "mplab")
 
     # excluded: docs, favicon.ico, run scripts (runmhc.bat/sh) 
-    _src_contents = "*"
-    #_src_contents = "databases/*", "np_templates/*", "scripts/*", "*.yml", "*.md", "*.jar", "*.xml", "manifest.db"
+    _src_contents = "databases/*", "np_templates/*", "scripts/*", "*.yml", "*.md", "*.jar", "*.xml", "manifest.db"
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version])
