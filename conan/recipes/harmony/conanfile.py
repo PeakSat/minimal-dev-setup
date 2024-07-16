@@ -13,8 +13,7 @@ class harmony_Recipe(ConanFile):
     description = "MPLAB® Harmony 3 Framework metapackage"
     topics = ("harmony", "framework", "mplab")
 
-    requires = "cmsis/5.4.0", "samv71-dfp/4.9.117", "harmony-csp/3.19.0"
-    tool_requires = "harmony-mhc/3.8.5"
+    requires = "cmsis/5.4.0", "samv71-dfp/4.9.117", "harmony-csp/3.19.0", "harmony-mhc/3.8.5"
 
     exports_sources = "cmake/*"
 
