@@ -24,7 +24,7 @@ class harmony_Recipe(ConanFile):
         # the fake framework root.
         # If we could somehow force Jython to resolve the symlinks without patching
         # and cannot be resolved correctly without patching (see issue #8) 
-        copy(self, "cmake/*.cmake", self.source_folder, self.package_folder)
+        copy(self, "cmake/*", self.source_folder, self.package_folder)
         copy(self, pattern="*", src=join(self.dependencies["cmsis"].package_folder), dst=join(self.package_folder, "dev_packs", "arm", "CMSIS", f"{self.dependencies['cmsis'].ref.version}"))
         copy(self, pattern="*", src=join(self.dependencies["samv71-dfp"].package_folder, "src"), dst=join(self.package_folder, "dev_packs", "Microchip", "SAMV71_DFP", f"{self.dependencies['samv71-dfp'].ref.version}"))
         copy(self, pattern="*", src=join(self.dependencies["harmony-csp"].package_folder, "src"), dst=join(self.package_folder, "csp"))

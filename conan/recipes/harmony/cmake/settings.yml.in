@@ -1,0 +1,14 @@
+configName: default
+folderName: ''
+format_version: null
+frameworkPath: @HARMONY_FW_ROOT@
+processor: @HARMONY_MHC_MCU_MODEL@
+projectName: default
+settings:
+  CMSISPath: ./@HARMONY_MHC_SETTINGS_YML_CMSISPATH@
+  DFPPath: ./@HARMONY_MHC_SETTINGS_YML_DFPPATH@
+  FORCE_OPTIMIZATION: 'false'
+  GENERATE_BACKUP: 'true'
+  MERGE_STRATEGY: USER_ALL
+  PackageFilter: csp
+  TRUSTZONE: 'false'
