@@ -125,13 +125,16 @@ function(add_harmony_config)
     file(REMOVE_RECURSE "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/packs/")
 
     add_library(mhc-gen-plib)
-    # TODO: restrict header access
-    target_include_directories(mhc-gen-plib PUBLIC "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/")
+    target_include_directories(mhc-gen-plib
+            PUBLIC "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/peripheral/"
+            INTERFACE "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/"
+            PRIVATE "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/"
+    )
     target_sources(mhc-gen-plib PRIVATE ${HARMONY_MHC_PERIPHERAL_DRIVER_SRCS})
     target_link_libraries(mhc-gen-plib PRIVATE samv71-dfp::Core)
 
     add_library(mhc-gen-irq)
-    target_include_directories(mhc-gen-irq PUBLIC "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/")
+    target_include_directories(mhc-gen-irq PRIVATE "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/")
     target_sources(mhc-gen-irq
             PRIVATE
                 "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/interrupts.c"
@@ -140,7 +143,7 @@ function(add_harmony_config)
     target_link_libraries(mhc-gen-irq PRIVATE samv71-dfp::Core)
 
     add_library(mhc-gen-sysinit)
-    target_include_directories(mhc-gen-sysinit PUBLIC "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/")
+    target_include_directories(mhc-gen-sysinit PRIVATE "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/")
     target_sources(mhc-gen-sysinit PRIVATE "${HARMONY_MHC_GEN_WORKDIR}/firmware/src/config/default/initialization.c")
     target_link_libraries(mhc-gen-sysinit PRIVATE samv71-dfp::Core mhc-gen-plib)
 
