@@ -6,7 +6,7 @@ compiler.cppstd=gnu17
 compiler.cstd=gnu17
 compiler.libcxx=libstdc++11
 compiler.version=13.2
-build_type=Release
+build_type=Debug
 
 [conf]
 # Generic-ELF is merely a way to add .elf suffix to generated
