@@ -30,3 +30,6 @@ tools.build:compiler_executables={"c": "arm-none-eabi-gcc", "cpp": "arm-none-eab
 
 # SAMV71-specific settings are done from within the included toolchain file
 tools.cmake.cmaketoolchain:user_toolchain={{ [os.path.join(profile_dir, "cmake-settings/samv71q21b.cmake")] }}
+
+# Use Ninja as default toolchain because it's crossplatform and faster than make
+tools.cmake.cmaketoolchain:generator=Ninja
