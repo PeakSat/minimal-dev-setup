@@ -39,6 +39,8 @@ tool. You should get text indicating the version somewhere.
 If you get an error (not found) then look [here](https://superuser.com/a/284351)
 for how to set up your PATH correctly.
 
+## Step 0: Clone this repository
+
 ## Step 1: Install the Conan profile for SAMV71
 
 All commands are run from the root directory. Assuming you have set up a default
@@ -62,12 +64,12 @@ command:
 conan create ./conan/recipes/<package-name> -pr=baremetal-samv71-armv7
 ```
 where `package-name` is the package's directory name. The correct order for
-installation (higher on the list = first, slashes = order doesn't matter between
-these two):
+installation (higher on the list = first):
 ```
 cmsis
 samv71-dfp
-harmony-csp/harmony-mhc
+harmony-csp
+harmony-mhc
 harmony
 ```
 Deviating from this order will just cause Conan to throw an error of missing
