@@ -153,7 +153,10 @@ conan build . -pr=baremetal-samv71-armv7
 The resulting binary should be at `build/Debug/my-samv71-project.elf`
 
 ## Using Harmony
-conanfile.py: Add `"harmony/3.0"` in your `requires` line.
+conanfile.py: Add `"harmony/3.0"` in your `requires` line, as follows:
+```
+requires = "samv71-dfp/4.9.117", "harmony/3.0"
+```
 CMakeLists.txt: 
 ```cmake
 find_package(Harmony REQUIRED)
