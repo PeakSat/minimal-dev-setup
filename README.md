@@ -29,6 +29,9 @@ Ensure that you have these tools installed and on your `PATH` before you start.
 | Ninja   (ninja --version)             | 1.12.1      |
 | Conan   (conan -v)                    | 2.5.0       |
 | OpenOCD (openocd -v)                  | 0.12.0      |
+| Adoptium OpenJDK (java -version)      | >= 8        |
+
+Download OpenJDK from https://adoptium.net
 
 To verify if they are on PATH:
 - **Windows**: open `Command Prompt (cmd.exe)`,
@@ -167,7 +170,10 @@ find_package(Harmony REQUIRED)
 [enabled Harmony](#using-harmony).
 
 The Harmony setup includes the Microchip Harmony Configurator (MHC) tool for
-adjusting settings and generating peripheral drivers.
+adjusting settings and generating peripheral drivers. **MHC needs Java**
+installed and in your PATH to work. If your Java setting is incorrect, CMake
+will notify you with an error.
+
 To launch it, use
 ```shell
 cd build/Debug \
