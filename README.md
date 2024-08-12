@@ -13,7 +13,7 @@ software for the ATSAMV71Q21B MCU, using the Harmony 3 framework.
   for Harmony tools and components, allowing for consistent builds anywhere.
 - Fully integrated: Harmony configuration (MHC) is entirely controlled from
   within CMake, both for the UI and for codegen. Generated components are mapped
-- to modern CMake targets.
+  to modern CMake targets.
 - Tooling-agnostic: Vendor-specific tools are isolated and can always be removed
   at any time with minimal disruption.
 - Documented: All settings and scripts come with detailed explanations of
