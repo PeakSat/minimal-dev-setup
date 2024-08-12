@@ -6,8 +6,13 @@
  */
 
 /*
- * IWYU (include what you use) is best practice!
- * Here, the peripheral headers are transitively included by
+ * Although SYS_Initialize() is declared for us in 'definitions.h',
+ * this header will transitively include all the peripheral
+ * libraries, which is a bad practice since it makes for
+ * 'spooky-action-at-a-distance' wrt. missing errors.  
+ *
+ * Prefer directly including the peripheral headers you need. It's
+ * more verbose but the gain in explicitness helps when debugging.
  */
 
 #include "pio/plib_pio.h"
