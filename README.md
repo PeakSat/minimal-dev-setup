@@ -234,15 +234,17 @@ You can use the generated code by linking in your executable the targets:
 - `Harmony::SysInit`: the SYS_Initialize() function that does the clock init.
 
 ## Uploading code
-You can upload compiled `.elf` binaries using OpenOCD. Assuming a common
-development board (Atmel SAMV71 Xplained Ultra), OpenOCD can do this:
+You can upload compiled `.elf` binaries using [OpenOCD](https://openocd.org)
+and a suitable configuration file (e.g. `atmel_samv71_xplained_ultra.cfg` for
+the Atmel SAMV71 Xplained Ultra board) with the following command:
+
 ```shell
 openocd -f /path/to/cfg/file -c "program /path/to/compiled/binary.elf reset"
 ```
 
 ## Attaching a debugger
-OpenOCD automatically opens a GDB debug server to which you can connect if
-needed, for complete control, as follows:
+OpenOCD automatically opens a debug server to which you can connect using
+GDB if needed, as follows:
 ```shell
 arm-none-eabi-gdb /path/to/compiled/binary_with_symbols.elf
 ```
@@ -250,7 +252,38 @@ Within GDB, run the following command to connect:
 `target extended-remote localhost:3333`
 
 ## CLion integration
-TODO
+
+Many developers in the team prefer using CLion for day-to-day coding. Conan
+generates CMake presets, which can be used for setting up CLion run
+configurations as follows:
+
+1. Generate CMake toolchains for `Debug` and `Release` builds using:
+- `conan install . -pr=baremetal-samv71-armv7 -s build_type=Debug`
+- `conan install . -pr=baremetal-samv71-armv7 -s build_type=Release`
+This should have generated a `CMakeUserPresets.json` file in the project
+directory.
+
+2. Start CLion and open the project directory (`Open` button).
+3. CLion should pop up a message in the lower right corner stating 
+`Loaded XXXX CMake presets` and a window named `Open Project Wizard`. 
+4. In the `Open Project Wizard`, disable the default `Debug` profile by
+   unticking the `Enable profile` checkbox. Enable only the `conan-debug`
+   and `conan-release` profiles.
+5. Click `OK`. You should now have two options for `conan-debug`
+and `conan-release`, so you can switch between them at will.
+6. Add an OpenOCD run configuration via `Run -> Edit Configurations`.
+   Click the `+` button on the upper left corner and select
+   `OpenOCD Download and Run` from the list.
+7. Set the `Executable binary` to your project's binary target, 
+   the `Debugger` to `arm-none-eabi-gdb` and the 
+   `Board config file` to OpenOCD's `cfg` file. Leave the rest of the
+   settings at default.
+8. Click `OK`. 
+
+If everything went well, add a random breakpoint in your code (make sure
+it's actually reachable) and try running the debugger from the "bug" icon.
+CLion should build, upload and attach automatically, and when the breakpoint
+is hit CLion's debug interface will start up, letting you step as always.
 
 # Appendix: Conan package description
 ## Device Family Pack (DFP)
@@ -285,4 +318,4 @@ TODO
 
 # Examples
 The repository includes example code under `examples/`. Refer to each example's
-README files for details on building.
+README files for details.
