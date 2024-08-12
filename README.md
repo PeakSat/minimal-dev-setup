@@ -124,13 +124,13 @@ on how to make  Conanfiles.
 Create a new `CMakeLists.txt` in your project dir:
 ```cmake
 cmake_minimum_required(VERSION 3.30)
-project(my-samv71-project CXX)
+project(my-samv71-project LANGUAGES C CXX)
 
 find_package(SAMV71-DFP COMPONENTS SAMV71Q21B REQUIRED)
 
 add_executable(my-samv71-project src/main.cpp)
 
-target_link_libraries(my-samv71-project PRIVATE samv71-dfp::SAMV71Q21B::Startup samv71-dfp::SAMV71Q21B::Linker::Flash)
+target_link_libraries(my-samv71-project PRIVATE samv71-dfp::Core samv71-dfp::SAMV71Q21B::Startup samv71-dfp::SAMV71Q21B::Linker::Flash)
 ```
 
 **NOTE**: Always link a startup file and linker script in the final binary
