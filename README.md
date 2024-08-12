@@ -160,6 +160,11 @@ conanfile.py: Add `"harmony/3.0"` in your `requires` line, as follows:
 ```
 requires = "samv71-dfp/4.9.117", "harmony/3.0"
 ```
+
+NOTE: Every time you modify your `conanfile.py`, you have to rerun
+`conan build . -pr=baremetal-samv71-armv7` in order for CMake to be
+updated with the freshest dependency info.
+
 CMakeLists.txt: 
 ```cmake
 find_package(Harmony REQUIRED)
