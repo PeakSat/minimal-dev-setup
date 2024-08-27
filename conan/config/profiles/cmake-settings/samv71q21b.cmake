@@ -50,10 +50,19 @@ set(RELWITHDEBINFO_FLAGS "-g -O2")
 # Explanation:
 #   -mcpu=cortex-m7: of course we are working with ARM Cortex M7 
 #   -mthumb: enable the Thumb instruction set (smaller, faster instructions)
-#   -mfloat-abi=hard: TODO add float support
-#   -mfpu=fpv5-d16: TODO add float support
-set(DEVICE_FLAGS "-mcpu=cortex-m7 -mthumb")
-#add_compile_definitions("ARM_MATH_CM7" "ARM_MATH_MATRIX_CHECK" "ARM_MATH_ROUNDING" "__FPU_PRESENT=1")
+#   -mfloat-abi=hard: ABI suitable for use with an FPU
+#   -mfpu=fpv5-d16: declare the FPU used (ARM VFP v5)
+#
+# WARNING: to actually use the FPU, you must enable it first in software, before
+# running any FPU instructions. FreeRTOS does enable it for you (ref vPortEnableVFP)
+# but if you're not using FreeRTOS you have to write the relevant assembler
+# stub yourself:
+#  https://developer.arm.com/documentation/dui0646/c/Cortex-M7-Peripherals/Floating-Point-Unit/Enabling-the-FPU
+# 
+# Further reading:
+#  - https://embeddedartistry.com/blog/2017/10/11/demystifying-arm-floating-point-compiler-options/
+set(DEVICE_FLAGS "-mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16")
+add_compile_definitions("ARM_MATH_CM7" "ARM_MATH_MATRIX_CHECK" "ARM_MATH_ROUNDING" "__FPU_PRESENT=1")
 
 # General linker configuration flags
 # Explanation: (-Wl tells GCC to pass this flag to the linker)
