@@ -80,7 +80,7 @@ function(add_harmony_config)
         set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${YAML_FILE}")
     endforeach ()
     list(JOIN _yml_hashes "" _yml_hash_concat)
-    string(SHA256 HARMONY_MHC_CONFIG_ID _yml_hash_concat)
+    string(SHA256 HARMONY_MHC_CONFIG_ID ${_yml_hash_concat})
 
     # STEP 2: Create working directory and copy files into expected structure
     set(HARMONY_MHC_GEN_WORKDIR "${CMAKE_CURRENT_BINARY_DIR}/Generated/MHC-${HARMONY_MHC_CONFIG_ID}/")
