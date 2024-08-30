@@ -130,8 +130,8 @@ class FreeRTOS(ConanFile):
     }
 
     default_options = {
-        "FREERTOS_HEAP": "NO_HEAP",
-        "USE_DEFAULT_CONFIGASSERT": True,
+        "FREERTOS_HEAP": 3,
+        "USE_DEFAULT_CONFIGASSERT": False,
         "configCPU_CLOCK_HZ": 20000000,
         "configTICK_RATE_HZ": 100,
         "configUSE_PREEMPTION": True,
@@ -272,7 +272,8 @@ class FreeRTOS(ConanFile):
             # deprecated in 11.1 but still supported in the foreseeable future,
             # and honestly let's not generate a CMakeLists.txt too until we are
             # forced to
-            "FREERTOS_CONFIG_FILE_DIRECTORY": os.path.join(self.source_folder, "include/")
+            "FREERTOS_CONFIG_FILE_DIRECTORY": os.path.join(self.source_folder, "include/"),
+            "CMAKE_C_OUTPUT_EXTENSION": "obj" # for consistency
         }
         heap_impl = self.options.get_safe("FREERTOS_HEAP")
         if heap_impl != "NO_HEAP":
@@ -290,11 +291,13 @@ class FreeRTOS(ConanFile):
         copy(self, "*.h", os.path.join(self.source_folder, "include"), os.path.join(self.package_folder, "include"))
         # Port-specific headers
         compiler_id, arch_id = self._get_freertos_port().split("_", 1)
-        copy(self, f"portable/{compiler_id.upper()}/{arch_id}/r0p1/portmacro.h", self.source_folder, os.path.join(self.package_folder, "include"))
+        copy(self, f"portable/{compiler_id.upper()}/{arch_id}/r0p1/portmacro.h", self.source_folder, os.path.join(self.package_folder, "include"), keep_path=False)
 
     def package_info(self):
         self.cpp_info.includedirs = ['include']
         self.cpp_info.libdirs = ["lib"]
+        self.cpp_info.libs = ["freertos_kernel"]
+        self.cpp_info.objects = ["lib/port.c.obj"]
         self.cpp_info.set_property("cmake_target_name", "freertos")
 
     def _to_freertos_define(self, option_name, option_value):
